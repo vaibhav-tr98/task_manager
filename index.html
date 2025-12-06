@@ -3,43 +3,84 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Task Manager - Vaibhav</title>
+  <title>Task Manager — Vaibhav</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="style.css" />
 </head>
 <body>
-  <main class="container" role="main">
-    <header>
-      <h1>Task Manager</h1>
-      <p class="subtitle">Simple, reliable to-do app — tasks saved in your browser.</p>
-    </header>
-
-    <section class="input-area" aria-label="Add task">
-      <form id="task-form" autocomplete="off">
-        <input id="task-input" placeholder="Add a new task..." aria-label="New task" />
-        <button type="submit" id="add-btn">Add</button>
-      </form>
-
-      <div class="controls">
-        <div class="left-controls">
-          <button id="filter-all" class="filter active">All</button>
-          <button id="filter-active" class="filter">Active</button>
-          <button id="filter-completed" class="filter">Completed</button>
-        </div>
-        <div class="right-controls">
-          <button id="clear-completed">Clear Completed</button>
-          <button id="clear-all">Clear All</button>
+  <main class="app">
+    <header class="topbar">
+      <div class="brand">
+        <svg class="logo" viewBox="0 0 24 24" aria-hidden><circle cx="12" cy="12" r="10" /></svg>
+        <div>
+          <h1>Task Manager</h1>
+          <p class="tag">Smart • Calm • Simple</p>
         </div>
       </div>
+      <div class="meta">
+        <div class="user">Vaibhav Tripathi • 2303610130059</div>
+      </div>
+    </header>
+
+    <section class="panel container">
+      <div class="left">
+        <form id="task-form" class="task-form" autocomplete="off">
+          <input id="task-input" placeholder="Add a task — e.g. Study maths for 1 hour" aria-label="New task" />
+          <button id="add-btn" type="submit" class="btn primary">Add</button>
+        </form>
+
+        <div class="controls">
+          <div class="filters" role="tablist" aria-label="Filters">
+            <button class="filter active" data-filter="all">All</button>
+            <button class="filter" data-filter="active">Active</button>
+            <button class="filter" data-filter="completed">Completed</button>
+          </div>
+
+          <div class="tools">
+            <input id="search" placeholder="Search tasks..." aria-label="Search tasks" />
+            <select id="sort">
+              <option value="new">Newest</option>
+              <option value="old">Oldest</option>
+              <option value="alpha">A → Z</option>
+            </select>
+          </div>
+        </div>
+
+        <ul id="task-list" class="task-list" role="list" aria-live="polite"></ul>
+
+        <div class="footer-controls">
+          <div id="counts" class="counts">0 tasks • 0 done</div>
+          <div class="footer-actions">
+            <button id="clear-completed" class="btn subtle">Clear Completed</button>
+            <button id="clear-all" class="btn subtle">Clear All</button>
+          </div>
+        </div>
+      </div>
+
+      <aside class="right">
+        <div class="card">
+          <h3>Today’s Tip</h3>
+          <p id="tip">Take five deep breaths when you feel overwhelmed — small steps matter.</p>
+        </div>
+
+        <div class="card">
+          <h3>Quick Stats</h3>
+          <div class="stats">
+            <div><strong id="totalCount">0</strong><span>Tasks</span></div>
+            <div><strong id="doneCount">0</strong><span>Completed</span></div>
+            <div><strong id="streak">0</strong><span>Active Streak</span></div>
+          </div>
+        </div>
+
+        <div class="card small">
+          <h4>Project</h4>
+          <p>Task Manager — Mini project for viva.</p>
+        </div>
+      </aside>
     </section>
 
-    <section aria-label="Tasks list">
-      <ul id="task-list" class="task-list" role="list"></ul>
-    </section>
-
-    <footer class="footer">
-      <div id="counts">0 tasks</div>
-      <div class="credit">Project: Task Manager — Vaibhav Tripathi (2303610130059)</div>
-    </footer>
+    <div id="toast" class="toast" aria-live="assertive"></div>
   </main>
 
   <template id="task-template">
@@ -47,18 +88,17 @@
       <div class="task-left">
         <input class="task-checkbox" type="checkbox" />
         <div class="task-main">
-          <div class="task-text"></div>
+          <div class="task-title"></div>
           <div class="task-meta"></div>
         </div>
       </div>
       <div class="task-actions">
-        <button class="edit-btn" title="Edit">✏️</button>
-        <button class="delete-btn" title="Delete">🗑️</button>
+        <button class="btn-icon edit-btn" title="Edit">✏️</button>
+        <button class="btn-icon delete-btn" title="Delete">🗑️</button>
       </div>
     </li>
   </template>
 
-<script src="app.js"></script>
+  <script src="app.js"></script>
 </body>
 </html>
-

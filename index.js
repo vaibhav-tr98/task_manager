@@ -1,75 +1,99 @@
-// Improved Task Manager with edit, filters, counts, persistence
-const form = document.getElementById('task-form');
-const input = document.getElementById('task-input');
-const list = document.getElementById('task-list');
-const clearCompletedBtn = document.getElementById('clear-completed');
-const clearAllBtn = document.getElementById('clear-all');
-const counts = document.getElementById('counts');
-const tmpl = document.getElementById('task-template');
+// Friendly Task Manager — improved UI + features
+const $ = sel => document.querySelector(sel);
+const form = $('#task-form');
+const input = $('#task-input');
+const list = $('#task-list');
+const clearCompletedBtn = $('#clear-completed');
+const clearAllBtn = $('#clear-all');
+const counts = $('#counts');
+const template = document.getElementById('task-template');
+const searchEl = $('#search');
+const sortEl = $('#sort');
 
-const fAll = document.getElementById('filter-all');
-const fActive = document.getElementById('filter-active');
-const fCompleted = document.getElementById('filter-completed');
+const filters = document.querySelectorAll('.filter');
+const totalCountEl = $('#totalCount');
+const doneCountEl = $('#doneCount');
+const streakEl = $('#streak');
 
 let tasks = JSON.parse(localStorage.getItem('tasks') || '[]');
-let filter = 'all'; // all | active | completed
+let filter = 'all';
+let sortBy = 'new';
 
-function save() {
-  localStorage.setItem('tasks', JSON.stringify(tasks));
+const tips = [
+  "Break a big task into a 10-minute chunk today.",
+  "Take a 3-minute breathing break between tasks.",
+  "Celebrate small wins — mark one done now.",
+  "Write one short journal sentence after task completion."
+];
+
+function toast(msg){
+  const t = $('#toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(()=> t.classList.remove('show'), 2200);
 }
+
+function save(){ localStorage.setItem('tasks', JSON.stringify(tasks)); updateStats(); }
 
 function formatDate(ts){
   const d = new Date(ts);
   return d.toLocaleString();
 }
 
-function updateCounts(){
+function updateStats(){
   const total = tasks.length;
   const done = tasks.filter(t=>t.done).length;
-  counts.textContent = `${total} task${total!==1 ? 's' : ''} · ${done} completed`;
+  counts.textContent = `${total} task${total!==1 ? 's' : ''} • ${done} completed`;
+  totalCountEl && (totalCountEl.textContent = total);
+  doneCountEl && (doneCountEl.textContent = done);
+  // simple streak: consecutive days with at least one completed today - not full algorithm, simple heuristic:
+  const today = new Date().toDateString();
+  const doneToday = tasks.some(t => t.done && new Date(t.completedAt || t.updatedAt || t.created).toDateString() === today);
+  streakEl && (streakEl.textContent = doneToday ? 1 : 0);
 }
 
 function createTaskElement(task, idx){
-  const node = tmpl.content.firstElementChild.cloneNode(true);
-  const checkbox = node.querySelector('.task-checkbox');
-  const textEl = node.querySelector('.task-text');
+  const node = template.content.firstElementChild.cloneNode(true);
+  const chk = node.querySelector('.task-checkbox');
+  const title = node.querySelector('.task-title');
   const meta = node.querySelector('.task-meta');
   const editBtn = node.querySelector('.edit-btn');
   const delBtn = node.querySelector('.delete-btn');
 
-  checkbox.checked = !!task.done;
-  textEl.textContent = task.text;
-  if(task.done) textEl.classList.add('completed'); else textEl.classList.remove('completed');
+  chk.checked = task.done;
+  title.textContent = task.text;
+  if(task.done) title.classList.add('completed'); else title.classList.remove('completed');
   meta.textContent = `Added: ${formatDate(task.created)}`;
 
-  checkbox.addEventListener('change', () => {
-    tasks[idx].done = checkbox.checked;
+  chk.addEventListener('change', () => {
+    tasks[idx].done = chk.checked;
+    tasks[idx].updatedAt = Date.now();
+    if(chk.checked) tasks[idx].completedAt = Date.now();
     save(); render();
+    toast(chk.checked ? 'Nice — marked complete' : 'Marked as not done');
   });
 
   delBtn.addEventListener('click', () => {
     if(!confirm('Delete this task?')) return;
-    tasks.splice(idx,1);
-    save(); render();
+    tasks.splice(idx,1); save(); render(); toast('Task deleted');
   });
 
   editBtn.addEventListener('click', () => {
-    // Replace text with input for inline edit
+    // inline edit
     const inputEl = document.createElement('input');
-    inputEl.type = 'text';
     inputEl.className = 'edit-input';
     inputEl.value = task.text;
     const main = node.querySelector('.task-main');
-    main.replaceChild(inputEl, textEl);
+    main.replaceChild(inputEl, title);
     inputEl.focus();
 
     const finish = (saveEdit) => {
       if(saveEdit){
-        const val = inputEl.value.trim();
-        if(val) tasks[idx].text = val;
+        const v = inputEl.value.trim();
+        if(v) tasks[idx].text = v;
       }
-      main.replaceChild(textEl, inputEl);
-      save(); render();
+      main.replaceChild(title, inputEl);
+      save(); render(); if(saveEdit) toast('Saved');
     };
 
     inputEl.addEventListener('blur', () => finish(true));
@@ -82,57 +106,75 @@ function createTaskElement(task, idx){
   return node;
 }
 
+function applySort(listArr){
+  if(sortBy === 'new') return listArr.sort((a,b)=>b.created - a.created);
+  if(sortBy === 'old') return listArr.sort((a,b)=>a.created - b.created);
+  if(sortBy === 'alpha') return listArr.sort((a,b)=>a.text.localeCompare(b.text));
+  return listArr;
+}
+
 function render(){
   list.innerHTML = '';
-  let filtered = tasks;
-  if(filter === 'active') filtered = tasks.filter(t=>!t.done);
-  if(filter === 'completed') filtered = tasks.filter(t=>t.done);
+  let filtered = tasks.slice();
+  if(filter === 'active') filtered = filtered.filter(t=>!t.done);
+  if(filter === 'completed') filtered = filtered.filter(t=>t.done);
+
+  // search
+  const q = (searchEl && searchEl.value || '').trim().toLowerCase();
+  if(q) filtered = filtered.filter(t => t.text.toLowerCase().includes(q));
+
+  filtered = applySort(filtered);
 
   if(filtered.length === 0){
     const li = document.createElement('li');
     li.className = 'task-item';
-    li.innerHTML = '<div style="color:#6b7280">No tasks here.</div>';
+    li.innerHTML = `<div style="color:var(--muted)">No tasks found.</div>`;
     list.appendChild(li);
   } else {
-    filtered.forEach((t, idxFiltered) => {
-      // idxFiltered is index in filtered; we need index in tasks:
+    filtered.forEach((t) => {
       const idx = tasks.indexOf(t);
       const el = createTaskElement(t, idx);
       list.appendChild(el);
     });
   }
-  updateCounts();
-  // update filter button active state
-  [fAll, fActive, fCompleted].forEach(btn => btn.classList.remove('active'));
-  if(filter === 'all') fAll.classList.add('active');
-  if(filter === 'active') fActive.classList.add('active');
-  if(filter === 'completed') fCompleted.classList.add('active');
+  updateStats();
+  document.querySelectorAll('.filter').forEach(b=>b.classList.remove('active'));
+  document.querySelector(`.filter[data-filter="${filter}"]`).classList.add('active');
 }
 
 form.addEventListener('submit', e => {
   e.preventDefault();
-  const val = input.value.trim();
-  if(!val) return;
-  tasks.unshift({ text: val, done:false, created: Date.now() });
+  const v = input.value.trim();
+  if(!v) return toast('Type something to add');
+  tasks.unshift({ text: v, done:false, created: Date.now() });
   input.value = '';
   save(); render();
+  toast('Task added');
 });
+
+document.addEventListener('click', (e) => {
+  if(e.target.matches('.filter')) {
+    filter = e.target.getAttribute('data-filter'); render();
+  }
+});
+
+document.getElementById('search').addEventListener('input', () => render());
+document.querySelector('#sort')?.addEventListener('change', (e)=> { sortBy = e.target.value; render(); });
 
 clearCompletedBtn.addEventListener('click', () => {
   if(!confirm('Remove all completed tasks?')) return;
-  tasks = tasks.filter(t=>!t.done);
-  save(); render();
+  tasks = tasks.filter(t => !t.done); save(); render(); toast('Completed cleared');
 });
-
 clearAllBtn.addEventListener('click', () => {
   if(!confirm('Clear ALL tasks?')) return;
-  tasks = [];
-  save(); render();
+  tasks = []; save(); render(); toast('All cleared');
 });
 
-fAll.addEventListener('click', () => { filter='all'; render(); });
-fActive.addEventListener('click', () => { filter='active'; render(); });
-fCompleted.addEventListener('click', () => { filter='completed'; render(); });
+// Tip rotate
+setInterval(()=> {
+  const t = tips[Math.floor(Math.random()*tips.length)];
+  const tipEl = document.getElementById('tip');
+  if(tipEl) tipEl.textContent = t;
+}, 5000);
 
-// initial render
 render();
