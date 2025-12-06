@@ -1,7 +1,10 @@
-// Friendly Task Manager — improved UI + features
+// Friendly Task Manager — patched: Add button uses click handler to prevent reload
+console.log('app.js loaded');
+
 const $ = sel => document.querySelector(sel);
 const form = $('#task-form');
 const input = $('#task-input');
+const addBtn = $('#add-btn');
 const list = $('#task-list');
 const clearCompletedBtn = $('#clear-completed');
 const clearAllBtn = $('#clear-all');
@@ -28,6 +31,7 @@ const tips = [
 
 function toast(msg){
   const t = $('#toast');
+  if(!t) return;
   t.textContent = msg;
   t.classList.add('show');
   setTimeout(()=> t.classList.remove('show'), 2200);
@@ -43,13 +47,12 @@ function formatDate(ts){
 function updateStats(){
   const total = tasks.length;
   const done = tasks.filter(t=>t.done).length;
-  counts.textContent = `${total} task${total!==1 ? 's' : ''} • ${done} completed`;
-  totalCountEl && (totalCountEl.textContent = total);
-  doneCountEl && (doneCountEl.textContent = done);
-  // simple streak: consecutive days with at least one completed today - not full algorithm, simple heuristic:
+  if(counts) counts.textContent = `${total} task${total!==1 ? 's' : ''} • ${done} completed`;
+  if(totalCountEl) totalCountEl.textContent = total;
+  if(doneCountEl) doneCountEl.textContent = done;
   const today = new Date().toDateString();
   const doneToday = tasks.some(t => t.done && new Date(t.completedAt || t.updatedAt || t.created).toDateString() === today);
-  streakEl && (streakEl.textContent = doneToday ? 1 : 0);
+  if(streakEl) streakEl.textContent = doneToday ? 1 : 0;
 }
 
 function createTaskElement(task, idx){
@@ -60,7 +63,7 @@ function createTaskElement(task, idx){
   const editBtn = node.querySelector('.edit-btn');
   const delBtn = node.querySelector('.delete-btn');
 
-  chk.checked = task.done;
+  chk.checked = !!task.done;
   title.textContent = task.text;
   if(task.done) title.classList.add('completed'); else title.classList.remove('completed');
   meta.textContent = `Added: ${formatDate(task.created)}`;
@@ -79,7 +82,6 @@ function createTaskElement(task, idx){
   });
 
   editBtn.addEventListener('click', () => {
-    // inline edit
     const inputEl = document.createElement('input');
     inputEl.className = 'edit-input';
     inputEl.value = task.text;
@@ -114,12 +116,12 @@ function applySort(listArr){
 }
 
 function render(){
+  if(!list) return;
   list.innerHTML = '';
   let filtered = tasks.slice();
   if(filter === 'active') filtered = filtered.filter(t=>!t.done);
   if(filter === 'completed') filtered = filtered.filter(t=>t.done);
 
-  // search
   const q = (searchEl && searchEl.value || '').trim().toLowerCase();
   if(q) filtered = filtered.filter(t => t.text.toLowerCase().includes(q));
 
@@ -139,17 +141,18 @@ function render(){
   }
   updateStats();
   document.querySelectorAll('.filter').forEach(b=>b.classList.remove('active'));
-  document.querySelector(`.filter[data-filter="${filter}"]`).classList.add('active');
+  const activeBtn = document.querySelector(`.filter[data-filter="${filter}"]`);
+  if(activeBtn) activeBtn.classList.add('active');
 }
 
-form.addEventListener('submit', e => {
-  e.preventDefault();
+// --- EVENT HANDLERS ---
+
+addBtn && addBtn.addEventListener('click', (e) => {
   const v = input.value.trim();
-  if(!v) return toast('Type something to add');
+  if(!v) { toast('Type something to add'); return; }
   tasks.unshift({ text: v, done:false, created: Date.now() });
   input.value = '';
-  save(); render();
-  toast('Task added');
+  save(); render(); toast('Task added');
 });
 
 document.addEventListener('click', (e) => {
@@ -158,23 +161,24 @@ document.addEventListener('click', (e) => {
   }
 });
 
-document.getElementById('search').addEventListener('input', () => render());
-document.querySelector('#sort')?.addEventListener('change', (e)=> { sortBy = e.target.value; render(); });
+searchEl && searchEl.addEventListener('input', () => render());
+sortEl && sortEl.addEventListener('change', (e)=> { sortBy = e.target.value; render(); });
 
-clearCompletedBtn.addEventListener('click', () => {
+clearCompletedBtn && clearCompletedBtn.addEventListener('click', () => {
   if(!confirm('Remove all completed tasks?')) return;
   tasks = tasks.filter(t => !t.done); save(); render(); toast('Completed cleared');
 });
-clearAllBtn.addEventListener('click', () => {
+clearAllBtn && clearAllBtn.addEventListener('click', () => {
   if(!confirm('Clear ALL tasks?')) return;
   tasks = []; save(); render(); toast('All cleared');
 });
 
-// Tip rotate
+// rotate tip
 setInterval(()=> {
   const t = tips[Math.floor(Math.random()*tips.length)];
   const tipEl = document.getElementById('tip');
   if(tipEl) tipEl.textContent = t;
 }, 5000);
 
+// initial render
 render();
