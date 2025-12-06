@@ -3,24 +3,62 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Task Manager - Vaibhav Tripathi</title>
+  <title>Task Manager - Vaibhav</title>
   <link rel="stylesheet" href="style.css" />
 </head>
 <body>
-  <div class="container">
-    <h1>Task Manager</h1>
-    <form id="task-form">
-      <input id="task-input" placeholder="Add a new task..." autocomplete="off" />
-      <button type="submit">Add</button>
-    </form>
-    <div class="controls">
-      <button id="clear-completed" type="button">Clear Completed</button>
-      <button id="clear-all" type="button">Clear All</button>
-    </div>
-    <ul id="task-list"></ul>
-    <p class="note">Tasks persist in your browser (localStorage). No backend required.</p>
-    <p class="footer">Project: Task Manager — Vaibhav Tripathi (2303610130059)</p>
-  </div>
+  <main class="container" role="main">
+    <header>
+      <h1>Task Manager</h1>
+      <p class="subtitle">Simple, reliable to-do app — tasks saved in your browser.</p>
+    </header>
+
+    <section class="input-area" aria-label="Add task">
+      <form id="task-form" autocomplete="off">
+        <input id="task-input" placeholder="Add a new task..." aria-label="New task" />
+        <button type="submit" id="add-btn">Add</button>
+      </form>
+
+      <div class="controls">
+        <div class="left-controls">
+          <button id="filter-all" class="filter active">All</button>
+          <button id="filter-active" class="filter">Active</button>
+          <button id="filter-completed" class="filter">Completed</button>
+        </div>
+        <div class="right-controls">
+          <button id="clear-completed">Clear Completed</button>
+          <button id="clear-all">Clear All</button>
+        </div>
+      </div>
+    </section>
+
+    <section aria-label="Tasks list">
+      <ul id="task-list" class="task-list" role="list"></ul>
+    </section>
+
+    <footer class="footer">
+      <div id="counts">0 tasks</div>
+      <div class="credit">Project: Task Manager — Vaibhav Tripathi (2303610130059)</div>
+    </footer>
+  </main>
+
+  <template id="task-template">
+    <li class="task-item">
+      <div class="task-left">
+        <input class="task-checkbox" type="checkbox" />
+        <div class="task-main">
+          <div class="task-text"></div>
+          <div class="task-meta"></div>
+        </div>
+      </div>
+      <div class="task-actions">
+        <button class="edit-btn" title="Edit">✏️</button>
+        <button class="delete-btn" title="Delete">🗑️</button>
+      </div>
+    </li>
+  </template>
+
 <script src="app.js"></script>
 </body>
 </html>
+
