@@ -1,0 +1,26 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Task Manager - Vaibhav Tripathi</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <div class="container">
+    <h1>Task Manager</h1>
+    <form id="task-form">
+      <input id="task-input" placeholder="Add a new task..." autocomplete="off" />
+      <button type="submit">Add</button>
+    </form>
+    <div class="controls">
+      <button id="clear-completed" type="button">Clear Completed</button>
+      <button id="clear-all" type="button">Clear All</button>
+    </div>
+    <ul id="task-list"></ul>
+    <p class="note">Tasks persist in your browser (localStorage). No backend required.</p>
+    <p class="footer">Project: Task Manager — Vaibhav Tripathi (2303610130059)</p>
+  </div>
+<script src="app.js"></script>
+</body>
+</html>

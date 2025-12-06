@@ -1,0 +1,22 @@
+:root{
+  --bg:#f5f7fb; --card:#ffffff; --accent:#2563eb; --muted:#6b7280;
+}
+*{box-sizing:border-box}
+body{font-family:Inter, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial; background:var(--bg); margin:0; padding:40px; color:#111827}
+.container{max-width:640px;margin:0 auto;background:var(--card);padding:28px;border-radius:12px;box-shadow:0 6px 18px rgba(16,24,40,0.06)}
+h1{margin:0 0 12px;font-size:24px;color:var(--accent)}
+#task-form{display:flex;gap:8px;margin-bottom:12px}
+#task-input{flex:1;padding:10px;border:1px solid #e5e7eb;border-radius:8px;font-size:16px}
+#task-form button{background:var(--accent);color:white;padding:10px 14px;border-radius:8px;border:0;cursor:pointer}
+.controls{display:flex;gap:8px;margin-bottom:12px}
+.controls button{background:#efefef;border:0;padding:8px 10px;border-radius:8px;cursor:pointer;color:var(--muted)}
+#task-list{list-style:none;padding:0;margin:0}
+.task-item{display:flex;align-items:center;justify-content:space-between;padding:10px;border-radius:8px;border:1px solid #f3f4f6;margin-bottom:8px;background:white}
+.task-left{display:flex;align-items:center;gap:12px}
+.task-left input{width:18px;height:18px}
+.task-text{font-size:16px}
+.task-text.completed{text-decoration:line-through;color:var(--muted)}
+.task-actions{display:flex;gap:8px}
+.task-actions button{background:transparent;border:0;cursor:pointer;color:var(--muted)}
+.note{margin-top:14px;color:var(--muted);font-size:14px}
+.footer{margin-top:18px;font-size:13px;color:var(--muted)}
