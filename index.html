@@ -25,7 +25,6 @@
     <section class="panel container">
       <div class="left">
         <form id="task-form" class="task-form" autocomplete="off" onsubmit="return false;">
-          <!-- changed: Add button is type="button" and form won't submit -->
           <input id="task-input" placeholder="Add a task — e.g. Study maths for 1 hour" aria-label="New task" />
           <button id="add-btn" type="button" class="btn primary">Add</button>
         </form>
@@ -99,6 +98,7 @@
     </li>
   </template>
 
-  <script src="app.js"></script>
+  <!-- IMPORTANT: script must match file in repo (you have index.js) -->
+  <script src="index.js"></script>
 </body>
 </html>
