@@ -1,104 +1,110 @@
-<!doctype html>
-<html lang="en">
+<!DOCTYPE html>
+<html>
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Task Manager — Vaibhav</title>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="style.css" />
+    <title>Enhanced Task Manager (HTML Only)</title>
 </head>
 <body>
-  <main class="app">
-    <header class="topbar">
-      <div class="brand">
-        <svg class="logo" viewBox="0 0 24 24" aria-hidden><circle cx="12" cy="12" r="10" /></svg>
-        <div>
-          <h1>Task Manager</h1>
-          <p class="tag">Smart • Calm • Simple</p>
-        </div>
-      </div>
-      <div class="meta">
-        <div class="user">Vaibhav Tripathi • 2303610130059</div>
-      </div>
-    </header>
 
-    <section class="panel container">
-      <div class="left">
-        <form id="task-form" class="task-form" autocomplete="off" onsubmit="return false;">
-          <input id="task-input" placeholder="Add a task — e.g. Study maths for 1 hour" aria-label="New task" />
-          <button id="add-btn" type="button" class="btn primary">Add</button>
-        </form>
+    <h1>Enhanced Task Manager</h1>
 
-        <div class="controls">
-          <div class="filters" role="tablist" aria-label="Filters">
-            <button class="filter active" data-filter="all">All</button>
-            <button class="filter" data-filter="active">Active</button>
-            <button class="filter" data-filter="completed">Completed</button>
-          </div>
+    <p>A simple task manager created using only HTML. Check tasks, type new ones, and organize them with priority, category, and due dates.</p>
 
-          <div class="tools">
-            <input id="search" placeholder="Search tasks..." aria-label="Search tasks" />
-            <select id="sort">
-              <option value="new">Newest</option>
-              <option value="old">Oldest</option>
-              <option value="alpha">A → Z</option>
-            </select>
-          </div>
-        </div>
+    <h3>Your Tasks:</h3>
 
-        <ul id="task-list" class="task-list" role="list" aria-live="polite"></ul>
+    <table border="1" cellpadding="8">
+        <tr>
+            <th>Done</th>
+            <th>Task</th>
+            <th>Priority</th>
+            <th>Category</th>
+            <th>Due Date</th>
+            <th>Notes</th>
+        </tr>
 
-        <div class="footer-controls">
-          <div id="counts" class="counts">0 tasks • 0 done</div>
-          <div class="footer-actions">
-            <button id="clear-completed" class="btn subtle">Clear Completed</button>
-            <button id="clear-all" class="btn subtle">Clear All</button>
-          </div>
-        </div>
-      </div>
+        <tr>
+            <td><input type="checkbox"></td>
+            <td>Study for 1 hour</td>
+            <td>
+                <select>
+                    <option>High</option>
+                    <option>Medium</option>
+                    <option>Low</option>
+                </select>
+            </td>
+            <td>
+                <select>
+                    <option>Study</option>
+                    <option>Work</option>
+                    <option>Personal</option>
+                </select>
+            </td>
+            <td><input type="date"></td>
+            <td><input type="text" placeholder="Add notes"></td>
+        </tr>
 
-      <aside class="right">
-        <div class="card">
-          <h3>Today’s Tip</h3>
-          <p id="tip">Take five deep breaths when you feel overwhelmed — small steps matter.</p>
-        </div>
+        <tr>
+            <td><input type="checkbox"></td>
+            <td>Read 5 pages</td>
+            <td>
+                <select>
+                    <option>High</option>
+                    <option>Medium</option>
+                    <option>Low</option>
+                </select>
+            </td>
+            <td>
+                <select>
+                    <option>Study</option>
+                    <option>Work</option>
+                    <option>Personal</option>
+                </select>
+            </td>
+            <td><input type="date"></td>
+            <td><input type="text" placeholder="Add notes"></td>
+        </tr>
 
-        <div class="card">
-          <h3>Quick Stats</h3>
-          <div class="stats">
-            <div><strong id="totalCount">0</strong><span>Tasks</span></div>
-            <div><strong id="doneCount">0</strong><span>Completed</span></div>
-            <div><strong id="streak">0</strong><span>Active Streak</span></div>
-          </div>
-        </div>
+        <tr>
+            <td><input type="checkbox"></td>
+            <td>Practice typing</td>
+            <td>
+                <select>
+                    <option>High</option>
+                    <option>Medium</option>
+                    <option>Low</option>
+                </select>
+            </td>
+            <td>
+                <select>
+                    <option>Study</option>
+                    <option>Work</option>
+                    <option>Personal</option>
+                </select>
+            </td>
+            <td><input type="date"></td>
+            <td><input type="text" placeholder="Add notes"></td>
+        </tr>
 
-        <div class="card small">
-          <h4>Project</h4>
-          <p>Task Manager — Mini project for viva.</p>
-        </div>
-      </aside>
-    </section>
+        <tr>
+            <td><input type="checkbox"></td>
+            <td><input type="text" placeholder="Write a new task"></td>
+            <td>
+                <select>
+                    <option>High</option>
+                    <option>Medium</option>
+                    <option>Low</option>
+                </select>
+            </td>
+            <td>
+                <select>
+                    <option>Study</option>
+                    <option>Work</option>
+                    <option>Personal</option>
+                </select>
+            </td>
+            <td><input type="date"></td>
+            <td><input type="text" placeholder="Add notes"></td>
+        </tr>
+    </table>
 
-    <div id="toast" class="toast" aria-live="assertive"></div>
-  </main>
-
-  <template id="task-template">
-    <li class="task-item">
-      <div class="task-left">
-        <input class="task-checkbox" type="checkbox" />
-        <div class="task-main">
-          <div class="task-title"></div>
-          <div class="task-meta"></div>
-        </div>
-      </div>
-      <div class="task-actions">
-        <button class="btn-icon edit-btn" title="Edit">✏️</button>
-        <button class="btn-icon delete-btn" title="Delete">🗑️</button>
-      </div>
-    </li>
-  </template>
-
-  <!-- IMPORTANT: script must match file in repo (you have index.js) -->
-  <script src="index.js"></script>
 </body>
 </html>
